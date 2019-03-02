@@ -14,17 +14,18 @@ import sys
 def closure(R, F, S):
 	# Convert S to set
 	x_previous = set(S);
-	x_current = []
+	x_current = set(S);
 
-	# while hasChanged is true
-	while x_current != x_previous:
-		# Update x_current with x_previous
-		x_current = x_previous
-
-		# For each FD, if FD is a subset of x_previous, update x_current with the RHS of FD
+	while 1:
+		# For each FD, if LHS is a subset of x_current, update x_current with the RHS of FD
 		for i in F:
-			if set(i[0]).issubset(x_previous):
+			if set(i[0]).issubset(x_current):
 				x_current.update(i[1])
+
+		if x_current == x_previous:
+			break
+		else:
+			x_previous.update(x_current)
 
 	return list(x_current)
 
@@ -63,8 +64,44 @@ def candidate_keys(R, F):
 
 ## Return a minimal cover of the functional dependencies of a given schema R and functional dependencies F.
 def min_cover(R, FD):
-	return []
+	# Remove all trivial dependencies
+	# non_trivial_fd = []
+	# for fd in FD:
+	# 	if not set(fd[1]).issubset(fd[0]):
+	# 		# print fd
+	# 		non_trivial_fd += [fd]
 
+	# Singleton right hand side
+	singleton_fd = []
+	for fd in FD:
+		for rhs in fd[1]:
+			singleton_fd += [[fd[0], [rhs]]]
+
+	# Remove extraneous attributes
+	extraneous_free_fd = singleton_fd[:]
+	for i in range(len(extraneous_free_fd)):
+		if len(extraneous_free_fd[i][0]) > 1:
+			# print extraneous_free_fd[i][0]
+			for j in range(len(extraneous_free_fd[i][0])):
+				comb = combinations(extraneous_free_fd[i][0], j+1)
+				for c in list(comb):
+					z = list(c)
+					c = closure(R, extraneous_free_fd, z)
+					if set(extraneous_free_fd[i][0]).issubset(c):
+						extraneous_free_fd[i][0] = z;
+						break;
+
+	# Remove redundant FDs
+	redundant_free_fd = []
+	for fd in extraneous_free_fd:
+		removed_fd = [x for x in extraneous_free_fd if x != fd]
+		# print removed_fd
+		if fd[1][0] not in closure(R, removed_fd, fd[0]):
+			redundant_free_fd += [fd]
+
+	minimal_cover = redundant_free_fd
+
+	return minimal_cover
 
 ## Return all minimal covers reachable from the functional dependencies of a given schema R and functional dependencies F.
 ## NOTE: This function is not graded for CS4221 students.
@@ -81,14 +118,13 @@ def all_min_covers(R, FD):
 ### Test case from the project
 R = ['A', 'B', 'C', 'D']
 FD = [[['A', 'B'], ['C']], [['C'], ['D']]]
-# print closure(R, FD, ['A'])
-# print closure(R, FD, ['A', 'B'])
+print closure(R, FD, ['A'])
+print closure(R, FD, ['A', 'B'])
 print all_closures(R, FD)
-# print candidate_keys(R, FD)
 
 R = ['A', 'B', 'C', 'D', 'E', 'F']
 FD = [[['A'], ['B', 'C']], [['B'], ['C', 'D']], [['D'], ['B']], [['A', 'B', 'E'], ['F']]]
-# print min_cover(R, FD)
+print min_cover(R, FD)
 
 R = ['A', 'B', 'C']
 FD = [[['A', 'B'], ['C']], [['A'], ['B']], [['B'], ['A']]]
