@@ -7,6 +7,8 @@
 ### IMPORTANT! Change this to your metric number for grading
 student_no = 'A0174404L'
 
+from itertools import combinations
+import sys
 
 ## Determine the closure of set of attribute S given the schema R and functional dependency F
 def closure(R, F, S):
@@ -28,7 +30,29 @@ def closure(R, F, S):
 
 ## Determine the all the attribute closure excluding superkeys that are not candidate keys given the schema R and functional dependency F
 def all_closures(R, F):
-	return []
+	x = []
+
+	# Iterate through all combinations of R for lengths 1...len(R)
+	ck_length = sys.maxint
+	for i in range(len(R)):
+		comb = combinations(R, i+1)
+		for j in list(comb):
+			# Compute closure of subset
+			comb_closure = closure(R, F, list(j))
+
+			# Check if is super key
+			if set(comb_closure) == set(R):
+				# Check if is candidate key
+				# If yes, add pair to x, else don't add
+				sk_length = len(list(j))
+				if sk_length <= ck_length:
+					ck_length = sk_length
+					x += [[list(j), comb_closure]]
+			else:
+				# Add all pairs that are not super key to x
+				x += [[list(j), comb_closure]]
+
+	return x
 
 
 ## Return the candidate keys of a given schema R and functional dependencies F.
@@ -57,10 +81,9 @@ def all_min_covers(R, FD):
 ### Test case from the project
 R = ['A', 'B', 'C', 'D']
 FD = [[['A', 'B'], ['C']], [['C'], ['D']]]
-print closure(R, FD, ['A'])
-print closure(R, FD, ['A', 'B'])
-
-# print all_closures(R, FD)
+# print closure(R, FD, ['A'])
+# print closure(R, FD, ['A', 'B'])
+print all_closures(R, FD)
 # print candidate_keys(R, FD)
 
 R = ['A', 'B', 'C', 'D', 'E', 'F']
