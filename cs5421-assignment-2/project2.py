@@ -10,18 +10,27 @@ student_no = 'A0174404L'
 
 ## Determine the closure of set of attribute S given the schema R and functional dependency F
 def closure(R, F, S):
+	# Convert S to set X
 	X = set(S);
 	hasChanged = 1
 
+	# while hasChanged is true
 	while hasChanged:
-		hasChanged = 0
+		# Initialize set of attributes X2 using X from previous iteration
+		# Set hasChanged to false
 		X2 = X
+		hasChanged = 0
+
+		# For each FD, if FD is a subset of X, update X2 with the RHS of FD
 		for i in F:
 			if set(i[0]).issubset(X):
 				X2.update(i[1])
+
+		# Check if set of attributes X2 in current iteration as changed from attributes X in previous iteration
+		# If yes, update X and set hasChanged to true
 		if X2 != X:
-			hasChanged = 1
 			X = X2
+			hasChanged = 1
 	return X
 
 ## Determine the all the attribute closure excluding superkeys that are not candidate keys given the schema R and functional dependency F
