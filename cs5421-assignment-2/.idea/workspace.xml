@@ -14,20 +14,11 @@
       <file leaf-file-name="project2.py" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/project2.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="408">
-              <caret line="178" column="13" lean-forward="true" selection-start-line="178" selection-start-column="13" selection-end-line="178" selection-end-column="13" />
+            <state relative-caret-position="221">
+              <caret line="94" column="30" selection-start-line="94" selection-start-column="30" selection-end-line="94" selection-end-column="30" />
               <folding>
                 <element signature="e#311#345#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="pydevd.py" pinned="false" current-in-tab="false">
-        <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="143">
-              <caret line="1067" selection-start-line="1067" selection-end-line="1067" />
             </state>
           </provider>
         </entry>
@@ -132,11 +123,11 @@
       <window_info anchor="bottom" id="Event Log" order="7" sideWeight="0.50165236" side_tool="true" weight="0.34691012" />
       <window_info anchor="bottom" id="Version Control" order="8" show_stripe_button="false" />
       <window_info anchor="bottom" id="Python Console" order="9" weight="0.3244382" />
-      <window_info active="true" anchor="bottom" id="Run" order="2" sideWeight="0.4990086" visible="true" weight="0.28792134" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.4990086" weight="0.29073033" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info anchor="bottom" id="Terminal" order="10" weight="0.2752809" />
+      <window_info anchor="bottom" id="Terminal" order="10" weight="0.109550565" />
       <window_info id="Favorites" order="2" side_tool="true" />
-      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.49834764" weight="0.4789326" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" sideWeight="0.49834764" visible="true" weight="0.39325842" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
@@ -154,8 +145,8 @@
       <breakpoints>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/project2.py</url>
-          <line>140</line>
-          <option name="timeStamp" value="146" />
+          <line>90</line>
+          <option name="timeStamp" value="176" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>
@@ -165,7 +156,7 @@
           </properties>
         </breakpoint>
       </default-breakpoints>
-      <option name="time" value="147" />
+      <option name="time" value="177" />
     </breakpoint-manager>
   </component>
   <component name="editorHistoryManager">
@@ -191,15 +182,15 @@
     </entry>
     <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="143">
-          <caret line="1067" selection-start-line="1067" selection-end-line="1067" />
+        <state relative-caret-position="75">
+          <caret line="1656" lean-forward="true" selection-start-line="1656" selection-end-line="1656" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/project2.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="408">
-          <caret line="178" column="13" lean-forward="true" selection-start-line="178" selection-start-column="13" selection-end-line="178" selection-end-column="13" />
+        <state relative-caret-position="221">
+          <caret line="94" column="30" selection-start-line="94" selection-start-column="30" selection-end-line="94" selection-end-column="30" />
           <folding>
             <element signature="e#311#345#0" expanded="true" />
           </folding>

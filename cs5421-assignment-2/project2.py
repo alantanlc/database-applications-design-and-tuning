@@ -8,6 +8,7 @@
 student_no = 'A0174404L'
 
 from itertools import combinations
+from itertools import product
 import copy
 import sys
 
@@ -84,13 +85,14 @@ def min_cover(R, FD):
 	for i in range(len(non_trivial_fd)):
 		if len(non_trivial_fd[i][0]) > 1:   # Continue only if LHS has 2 or more attributes
 			extraneous_free_fd[i] = [[], non_trivial_fd[i][1]]
+			lhs = list(non_trivial_fd[i][0])
 			for j in range(len(non_trivial_fd[i][0])):
-				lhs =  list(non_trivial_fd[i][0])
-				attr = lhs[j]
+				attr = non_trivial_fd[i][0][j]
 				lhs.remove(attr)
 				c = closure(R, non_trivial_fd, lhs)
 				if not set(attr).issubset(c) and not set(non_trivial_fd[i][1]).issubset(c):
 					extraneous_free_fd[i][0] += [attr]
+					lhs.append(attr)
 		else:
 			extraneous_free_fd[i] = list(non_trivial_fd[i])
 
@@ -110,7 +112,7 @@ def min_cover(R, FD):
 ## Return all minimal covers reachable from the functional dependencies of a given schema R and functional dependencies F.
 ## NOTE: This function is not graded for CS4221 students.
 def min_covers(R, FD):
-	minimal_cover = []
+	minimal_covers = []
 
 	# Singleton right hand side
 	singleton_fd = []
@@ -126,28 +128,43 @@ def min_covers(R, FD):
 			non_trivial_fd += [fd]
 
 	# Remove extraneous attributes
-	extraneous_free_fd = list(non_trivial_fd)
+	extraneous_free_fd = [None] * len(non_trivial_fd)
 	for i in range(len(non_trivial_fd)):
-		if len(non_trivial_fd[i][0]) > 1:  # Continue only if LHS has 2 or more attributes
-			# print singleton_fd[i][0]
-			extraneous_free_fd[i] = [[], non_trivial_fd[i][1]]
-			for j in range(len(non_trivial_fd[i][0])):
-				attr = non_trivial_fd[i][0][j]
-				c = closure(R, non_trivial_fd, attr)
-				if set(non_trivial_fd[i][0]).issubset(c):
-					extraneous_free_fd[i][0] = [attr]
+		if len(non_trivial_fd[i][0]) > 1:
+			# print non_trivial_fd[i][0]
+			extraneous_free_fd[i] = []
+			for j in range(len(non_trivial_fd[i][0])-1):
+				comb = combinations(non_trivial_fd[i][0], j + 1)
+				for c in list(comb):
+					z = list(c)
+					c = closure(R, non_trivial_fd, z)
+					if set(non_trivial_fd[i][0]).issubset(c):
+						extraneous_free_fd[i].append([z, non_trivial_fd[i][1]])
+			if len(extraneous_free_fd[i]) == 0:
+				extraneous_free_fd[i] = list([non_trivial_fd[i]])
+		# for k in extraneous_free_fd[i][0]:
+		# 	print k
+		else:
+			extraneous_free_fd[i] = [non_trivial_fd[i]]
 
-					# Remove redundant FDs
-					redundant_free_fd = []
-					for fd in extraneous_free_fd:
-						removed_fd = [x for x in extraneous_free_fd if x != fd]
-						attr = fd[0]
-						c = closure(R, removed_fd, attr)
-						if not set(fd[1]).issubset(c):
-							redundant_free_fd += [fd]
-					minimal_cover.append(copy.deepcopy(redundant_free_fd))
+	# Get cartesian of FDs
+	fd_cartesian = product(*extraneous_free_fd)
+	fd_cartesian = list(fd_cartesian)
+	for i in fd_cartesian:
+		fd = list(i)
+		# print fd
 
-	return minimal_cover
+		# Remove redundant FDs
+		redundant_free_fd = []
+		for f in fd:
+			removed_fd = [x for x in fd if x != f]
+			attr = f[0]
+			c = closure(R, removed_fd, attr)
+			if not set(f[1]).issubset(c) and f not in redundant_free_fd:
+				redundant_free_fd += [f]
+		minimal_covers.append(copy.deepcopy(redundant_free_fd))
+
+	return minimal_covers
 
 ## Return all minimal covers of a given schema R and functional dependencies F.
 ## NOTE: This function is not graded for CS4221 students.
@@ -158,23 +175,23 @@ def all_min_covers(R, FD):
 ### Test case from the project
 R = ['A', 'B', 'C', 'D']
 FD = [[['A', 'B'], ['C']], [['C'], ['D']]]
-# print closure(R, FD, ['A'])
-# print closure(R, FD, ['A', 'B'])
-# print all_closures(R, FD)
+print closure(R, FD, ['A'])
+print closure(R, FD, ['A', 'B'])
+print all_closures(R, FD)
 
 R = ['A', 'B', 'C', 'D', 'E', 'F']
 FD = [[['A'], ['B', 'C']], [['B'], ['C', 'D']], [['D'], ['B']], [['A', 'B', 'E'], ['F']]]
-# print min_cover(R, FD)
+print min_cover(R, FD)
 
 R = ['A', 'B', 'C']
 FD = [[['A', 'B'], ['C']], [['A'], ['B']], [['B'], ['A']]]
-# print min_covers(R, FD)
+print min_covers(R, FD)
 # print all_min_covers(R, FD)
 
 ## Tutorial questions
 R = ['A', 'B', 'C', 'D', 'E']
 FD = [[['A', 'B'], ['C']], [['D'], ['D', 'B']], [['B'], ['E']], [['E'], ['D']], [['A', 'B', 'D'], ['A', 'B', 'C', 'D']]]
-# print min_cover(R, FD)
+print min_cover(R, FD)
 print min_covers(R, FD)
 # print all_min_covers(R, FD)
 
