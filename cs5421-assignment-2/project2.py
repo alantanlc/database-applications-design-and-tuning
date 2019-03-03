@@ -29,6 +29,7 @@ def closure(R, F, S):
 
 	return list(x_current)
 
+
 ## Determine the all the attribute closure excluding superkeys that are not candidate keys given the schema R and functional dependency F
 def all_closures(R, F):
 	x = []
@@ -64,13 +65,6 @@ def candidate_keys(R, F):
 
 ## Return a minimal cover of the functional dependencies of a given schema R and functional dependencies F.
 def min_cover(R, FD):
-	# Remove all trivial dependencies
-	# non_trivial_fd = []
-	# for fd in FD:
-	# 	if not set(fd[1]).issubset(fd[0]):
-	# 		# print fd
-	# 		non_trivial_fd += [fd]
-
 	# Singleton right hand side
 	singleton_fd = []
 	for fd in FD:
@@ -78,18 +72,20 @@ def min_cover(R, FD):
 			singleton_fd += [[fd[0], [rhs]]]
 
 	# Remove extraneous attributes
-	extraneous_free_fd = singleton_fd[:]
-	for i in range(len(extraneous_free_fd)):
-		if len(extraneous_free_fd[i][0]) > 1:
-			# print extraneous_free_fd[i][0]
-			for j in range(len(extraneous_free_fd[i][0])):
-				comb = combinations(extraneous_free_fd[i][0], j+1)
-				for c in list(comb):
-					z = list(c)
-					c = closure(R, extraneous_free_fd, z)
-					if set(extraneous_free_fd[i][0]).issubset(c):
-						extraneous_free_fd[i][0] = z;
-						break;
+	extraneous_free_fd = [None] * len(singleton_fd)
+	for i in range(len(singleton_fd)):
+		if len(singleton_fd[i][0]) > 1:   # Continue only if LHS has 2 or more attributes
+			print singleton_fd[i][0]
+			extraneous_free_fd[i] = [[], []]
+			extraneous_free_fd[i][1] = list(singleton_fd[i][1])
+			for j in range(len(singleton_fd[i][0])):
+				lhs =  list(singleton_fd[i][0])
+				attr = lhs[j]
+				lhs.remove(attr)
+				if attr not in closure(R, singleton_fd, lhs):
+					extraneous_free_fd[i][0] += [attr]
+		else:
+			extraneous_free_fd[i] = list(singleton_fd[i])
 
 	# Remove redundant FDs
 	redundant_free_fd = []
@@ -118,13 +114,17 @@ def all_min_covers(R, FD):
 ### Test case from the project
 R = ['A', 'B', 'C', 'D']
 FD = [[['A', 'B'], ['C']], [['C'], ['D']]]
-print closure(R, FD, ['A'])
-print closure(R, FD, ['A', 'B'])
-print all_closures(R, FD)
+# print closure(R, FD, ['A'])
+# print closure(R, FD, ['A', 'B'])
+# print all_closures(R, FD)
 
 R = ['A', 'B', 'C', 'D', 'E', 'F']
 FD = [[['A'], ['B', 'C']], [['B'], ['C', 'D']], [['D'], ['B']], [['A', 'B', 'E'], ['F']]]
 print min_cover(R, FD)
+
+# R = ['A', 'B', 'C', 'D', 'E']
+# FD = [[['A'], ['B']], [['A', 'B'], ['C']], [['D'], ['A', 'C']], [['D'], ['E']]]
+# print min_cover(R, FD)
 
 R = ['A', 'B', 'C']
 FD = [[['A', 'B'], ['C']], [['A'], ['B']], [['B'], ['A']]]
