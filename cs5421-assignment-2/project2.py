@@ -8,6 +8,7 @@
 student_no = 'A0174404L'
 
 from itertools import combinations
+import copy
 import sys
 
 ## Determine the closure of set of attribute S given the schema R and functional dependency F
@@ -71,28 +72,35 @@ def min_cover(R, FD):
 		for rhs in fd[1]:
 			singleton_fd += [[fd[0], [rhs]]]
 
+	# Remove all trivial dependencies
+	non_trivial_fd = []
+	for fd in singleton_fd:
+		if not set(fd[1]).issubset(fd[0]):
+			# print fd
+			non_trivial_fd += [fd]
+
 	# Remove extraneous attributes
-	extraneous_free_fd = [None] * len(singleton_fd)
-	for i in range(len(singleton_fd)):
-		if len(singleton_fd[i][0]) > 1:   # Continue only if LHS has 2 or more attributes
-			print singleton_fd[i][0]
-			extraneous_free_fd[i] = [[], []]
-			extraneous_free_fd[i][1] = list(singleton_fd[i][1])
-			for j in range(len(singleton_fd[i][0])):
-				lhs =  list(singleton_fd[i][0])
+	extraneous_free_fd = [None] * len(non_trivial_fd)
+	for i in range(len(non_trivial_fd)):
+		if len(non_trivial_fd[i][0]) > 1:   # Continue only if LHS has 2 or more attributes
+			extraneous_free_fd[i] = [[], non_trivial_fd[i][1]]
+			for j in range(len(non_trivial_fd[i][0])):
+				lhs =  list(non_trivial_fd[i][0])
 				attr = lhs[j]
 				lhs.remove(attr)
-				if attr not in closure(R, singleton_fd, lhs):
+				c = closure(R, non_trivial_fd, lhs)
+				if not set(attr).issubset(c) and not set(non_trivial_fd[i][1]).issubset(c):
 					extraneous_free_fd[i][0] += [attr]
 		else:
-			extraneous_free_fd[i] = list(singleton_fd[i])
+			extraneous_free_fd[i] = list(non_trivial_fd[i])
 
 	# Remove redundant FDs
 	redundant_free_fd = []
 	for fd in extraneous_free_fd:
 		removed_fd = [x for x in extraneous_free_fd if x != fd]
-		# print removed_fd
-		if fd[1][0] not in closure(R, removed_fd, fd[0]):
+		attr = fd[0]
+		c = closure(R, removed_fd, attr)
+		if not set(fd[1]).issubset(c):
 			redundant_free_fd += [fd]
 
 	minimal_cover = redundant_free_fd
@@ -102,8 +110,44 @@ def min_cover(R, FD):
 ## Return all minimal covers reachable from the functional dependencies of a given schema R and functional dependencies F.
 ## NOTE: This function is not graded for CS4221 students.
 def min_covers(R, FD):
-	return []
+	minimal_cover = []
 
+	# Singleton right hand side
+	singleton_fd = []
+	for fd in FD:
+		for rhs in fd[1]:
+			singleton_fd += [[fd[0], [rhs]]]
+
+	# Remove all trivial dependencies
+	non_trivial_fd = []
+	for fd in singleton_fd:
+		if not set(fd[1]).issubset(fd[0]):
+			# print fd
+			non_trivial_fd += [fd]
+
+	# Remove extraneous attributes
+	extraneous_free_fd = list(non_trivial_fd)
+	for i in range(len(non_trivial_fd)):
+		if len(non_trivial_fd[i][0]) > 1:  # Continue only if LHS has 2 or more attributes
+			# print singleton_fd[i][0]
+			extraneous_free_fd[i] = [[], non_trivial_fd[i][1]]
+			for j in range(len(non_trivial_fd[i][0])):
+				attr = non_trivial_fd[i][0][j]
+				c = closure(R, non_trivial_fd, attr)
+				if set(non_trivial_fd[i][0]).issubset(c):
+					extraneous_free_fd[i][0] = [attr]
+
+					# Remove redundant FDs
+					redundant_free_fd = []
+					for fd in extraneous_free_fd:
+						removed_fd = [x for x in extraneous_free_fd if x != fd]
+						attr = fd[0]
+						c = closure(R, removed_fd, attr)
+						if not set(fd[1]).issubset(c):
+							redundant_free_fd += [fd]
+					minimal_cover.append(copy.deepcopy(redundant_free_fd))
+
+	return minimal_cover
 
 ## Return all minimal covers of a given schema R and functional dependencies F.
 ## NOTE: This function is not graded for CS4221 students.
@@ -120,10 +164,6 @@ FD = [[['A', 'B'], ['C']], [['C'], ['D']]]
 
 R = ['A', 'B', 'C', 'D', 'E', 'F']
 FD = [[['A'], ['B', 'C']], [['B'], ['C', 'D']], [['D'], ['B']], [['A', 'B', 'E'], ['F']]]
-print min_cover(R, FD)
-
-# R = ['A', 'B', 'C', 'D', 'E']
-# FD = [[['A'], ['B']], [['A', 'B'], ['C']], [['D'], ['A', 'C']], [['D'], ['E']]]
 # print min_cover(R, FD)
 
 R = ['A', 'B', 'C']
@@ -134,10 +174,8 @@ FD = [[['A', 'B'], ['C']], [['A'], ['B']], [['B'], ['A']]]
 ## Tutorial questions
 R = ['A', 'B', 'C', 'D', 'E']
 FD = [[['A', 'B'], ['C']], [['D'], ['D', 'B']], [['B'], ['E']], [['E'], ['D']], [['A', 'B', 'D'], ['A', 'B', 'C', 'D']]]
-
-# print candidate_keys(R, FD)
 # print min_cover(R, FD)
-# print min_covers(R, FD)
+print min_covers(R, FD)
 # print all_min_covers(R, FD)
 
 print "End of program"
