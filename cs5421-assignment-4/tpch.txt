@@ -1,0 +1,43 @@
+Question 2-1:
+select lo.lo_orderkey, p.p_name, s.s_name, lo.lo_orderdate, lo.lo_extendedprice 
+from fact_lineorder lo, dim_customer c, dim_part p, dim_supplier s 
+where lo.lo_custkey = c.c_custkey 
+and lo.lo_partkey = p.p_partkey 
+and lo.lo_suppkey = s.s_suppkey 
+and c.c_name = 'Customer#000000001'
+
+Question 2-2:
+select c.c_region, c.c_nation, c.c_mktsegment, sum(lo.lo_extendedprice)
+from fact_lineorder lo, dim_customer c, dim_part p
+where lo.lo_custkey = c.c_custkey 
+and lo.lo_partkey = p.p_partkey
+and p.p_brand = 'Brand#13'
+group by c.c_region, c.c_nation, c.c_mktsegment
+
+Question 2-3:
+select
+	extract(year from o.o_orderdate) as year,
+	extract(month from o.o_orderdate) as month,
+	count(l.l_orderkey) as num_of_line_orders,
+	sum(l_extendedprice) as sum_ext_price,
+	sum(l_extendedprice * (1 - l_discount)) as sum_disc_ext_price,
+	sum(l_extendedprice * (1 - l_discount) * (1 + l_tax)) as sum_disc_ext_price_plus_tax,
+	avg(l_quantity) as avg_qty,
+	avg(l_extendedprice) as avg_ext_price,
+	avg(l_discount) as avg_disc
+from lineitem l, orders o
+where l.l_orderkey = o.o_orderkey
+group by extract(year from o.o_orderdate), extract(month from o.o_orderdate)
+order by extract(year from o.o_orderdate), extract(month from o.o_orderdate)
+
+Question 2-4:
+select o.o_orderpriority, count(*) as order_count
+from orders o
+where exists
+	(
+		select * from lineitem l
+		where l.l_orderkey = o.o_orderkey
+		and l.l_commitdate < l.l_receiptdate
+	)
+group by o.o_orderpriority
+order by o.o_orderpriority

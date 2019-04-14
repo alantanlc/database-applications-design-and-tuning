@@ -1,0 +1,18 @@
+=== INSTRUCTIONS
+
+We are going to use BULK INSERTION method.
+
+If you look at the files in the directory, for instance customers.tbl, the first line looks like this:
+
+1|Customer#000000001|IVhzIApeRb ot,c,E|15|25-989-741-2988|711.56|BUILDING|to [...]
+
+Notice that each line is a tuple and each field is separated from the others by a | (pipe) character. This is the field-
+delimiter character.
+
+Copy the files from the raw directory into /tmp/. Then from the pgAdmin Query Tool, execute the following query:
+
+COPY part FROM '/tmp/part.tbl' WITH DELIMITER '|';
+
+It tells PostgreSQL to copy to the part table from the /tmp/part.tbl file, using the pipe character
+as a field-delimiter. The database will be updated exactly as if you had used the INSERT INTO query. Repeat this
+for the remaining tables.
